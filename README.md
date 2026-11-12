@@ -41,15 +41,15 @@ Every material reacts to the pointer, and a click sends a pulse through it.
 
 A 2D incompressible Navier–Stokes solver ("stable fluids") running entirely in fragment shaders on half-float textures. Each frame runs, in order:
 
-| Pass | What it does |
-|------|--------------|
-| Splat | Adds force and dye from the pointer and from two built-in jets |
-| Curl → vorticity | Vorticity confinement, restoring swirl lost to numerical diffusion |
-| Divergence | Measures how much the field compresses, with no-slip walls |
-| Pressure | Jacobi iterations of the Poisson equation, warm-started from the last frame |
-| Gradient subtract | Projects velocity onto its divergence-free part |
-| Advect | Semi-Lagrangian transport of velocity, then dye |
-| Bloom → display | Threshold, blur chain, relief lighting, tone curve, grain |
+| Pass              | What it does                                                                |
+| ----------------- | --------------------------------------------------------------------------- |
+| Splat             | Adds force and dye from the pointer and from two built-in jets              |
+| Curl → vorticity  | Vorticity confinement, restoring swirl lost to numerical diffusion          |
+| Divergence        | Measures how much the field compresses, with no-slip walls                  |
+| Pressure          | Jacobi iterations of the Poisson equation, warm-started from the last frame |
+| Gradient subtract | Projects velocity onto its divergence-free part                             |
+| Advect            | Semi-Lagrangian transport of velocity, then dye                             |
+| Bloom → display   | Threshold, blur chain, relief lighting, tone curve, grain                   |
 
 - **Typography as a boundary condition.** The obstacle word is rasterised with Canvas 2D into a mask texture. The divergence, pressure and gradient passes treat masked cells as solid walls, so the flow routes around each letter.
 - **Three views of the same field.** Dye, velocity and pressure (`V` cycles them).
