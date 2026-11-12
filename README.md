@@ -60,12 +60,15 @@ The solver lives in `src/lib/fluid/` (`shaders.ts`, `sim.ts`, `store.ts`); its U
 
 ## Design file
 
-The UI is mirrored in Figma: [Afterglow — WebGL material studio](https://www.figma.com/design/vdRPIQwuptIbVveMQIrjzn).
+The project is documented as a case study in Figma: [Afterglow & Undertow](https://www.figma.com/design/vdRPIQwuptIbVveMQIrjzn).
 
-- **Variables**: `color/*`, a `palette/<material>/<stop>` set for all five materials, radii and spacing — the same values as `src/app/globals.css` and `src/lib/gl/materials/index.ts`.
-- **Text styles**: Instrument Serif (display), Geist (UI) and Geist Mono (labels and readouts).
-- **Components**: Slider, Swatch, Dock Item (selected / default), Icon Button and the icon set, each named after its React counterpart.
-- **Screen**: the 1440 desktop studio, built from instances with editable layers. The shader backdrop is a stand-in made of blurred shapes; the real thing only exists at runtime.
+1. **Cover and overview** — the problem, constraints, key decisions and outcome.
+2. **Foundations and components** — colour (nine four-stop palettes), type, radius and the glass surface; nine components and nine icons, each captioned with the source file it maps to.
+3. **Afterglow** — a 1440 desktop screen for each of the five materials.
+4. **Undertow and mobile** — the fluid studio on desktop, plus 390 mobile layouts including the control sheet.
+5. **Interaction and handoff** — motion values, responsive rules, keyboard map, accessibility notes and a design-to-code table.
+
+Screens are built from component instances bound to variables. Their canvases hold frames captured from the running app, since the shaders only exist at runtime.
 
 ## Layout
 
