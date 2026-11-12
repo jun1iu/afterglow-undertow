@@ -18,7 +18,7 @@ import {
  * doesn't display that value.
  */
 
-export interface Point {
+interface Point {
   /** Viewport coordinates in CSS pixels. */
   readonly x: number;
   readonly y: number;
@@ -37,13 +37,20 @@ export interface StudioState {
   readonly chrome: boolean;
 }
 
+/** Replaces one slot of a fixed-length tuple, keeping its tuple type. */
+function withItem<T extends readonly unknown[]>(tuple: T, index: number, value: T[number]): T {
+  return tuple.map((item, i) => (i === index ? value : item)) as unknown as T;
+}
+
+const initialParams = (id: MaterialId) =>
+  MATERIALS[id].params.map((p) => p.initial) as unknown as ParamValues;
+
 function defaults(): StudioState {
   const params = {} as Record<MaterialId, ParamValues>;
   const palettes = {} as Record<MaterialId, Palette>;
   for (const id of MATERIAL_IDS) {
-    const def = MATERIALS[id];
-    params[id] = def.params.map((p) => p.initial) as unknown as ParamValues;
-    palettes[id] = def.palette;
+    params[id] = initialParams(id);
+    palettes[id] = MATERIALS[id].palette;
   }
   return {
     material: "silk",
@@ -58,7 +65,7 @@ function defaults(): StudioState {
   };
 }
 
-export const DEFAULT_STATE: StudioState = defaults();
+const DEFAULT_STATE: StudioState = defaults();
 
 type Listener = () => void;
 
@@ -107,19 +114,14 @@ export const actions = {
   setParam(index: number, value: number) {
     const def = MATERIALS[state.material].params[index];
     if (!def) return;
-    const current = state.params[state.material];
-    const next = current.map((v, i) => (i === index ? clamp(value, def.min, def.max) : v));
-    set({ ...state, params: { ...state.params, [state.material]: next as unknown as ParamValues } });
+    const next = withItem(state.params[state.material], index, clamp(value, def.min, def.max));
+    set({ ...state, params: { ...state.params, [state.material]: next } });
   },
 
   setColor(index: number, hex: string) {
     if (!isHex(hex)) return;
-    const next = state.palettes[state.material].map((c, i) => (i === index ? hex.toLowerCase() : c));
-    set({ ...state, palettes: { ...state.palettes, [state.material]: next as unknown as Palette } });
-  },
-
-  setPalette(palette: Palette) {
-    set({ ...state, palettes: { ...state.palettes, [state.material]: palette } });
+    const next = withItem(state.palettes[state.material], index, hex.toLowerCase());
+    set({ ...state, palettes: { ...state.palettes, [state.material]: next } });
   },
 
   setTempo(tempo: number) {
@@ -133,8 +135,7 @@ export const actions = {
   /** New seed + a freshly generated palette for the current material. */
   shuffle() {
     const seed = Math.floor(Math.random() * 9999) + 1;
-    const palette = generatePalette(seed) as unknown as Palette;
-    set({ ...state, seed, palettes: { ...state.palettes, [state.material]: palette } });
+    set({ ...state, seed, palettes: { ...state.palettes, [state.material]: generatePalette(seed) } });
   },
 
   resetMaterial() {
@@ -142,7 +143,7 @@ export const actions = {
     set({
       ...state,
       seed: 0,
-      params: { ...state.params, [def.id]: def.params.map((p) => p.initial) as unknown as ParamValues },
+      params: { ...state.params, [def.id]: initialParams(def.id) },
       palettes: { ...state.palettes, [def.id]: def.palette },
     });
   },
@@ -182,7 +183,7 @@ export function encode(s: StudioState): string {
 }
 
 /** Parses a fragment defensively — a shared link is untrusted input. */
-export function decode(hash: string, base: StudioState): StudioState | null {
+function decode(hash: string, base: StudioState): StudioState | null {
   const q = new URLSearchParams(hash.replace(/^#/, ""));
   const material = q.get("m");
   if (!isMaterialId(material)) return null;
@@ -191,11 +192,16 @@ export function decode(hash: string, base: StudioState): StudioState | null {
   let params = base.params[material];
   const rawParams = q.get("p")?.split("_").map(Number);
   if (rawParams && rawParams.length === def.params.length && rawParams.every(Number.isFinite)) {
-    params = def.params.map((p, i) => clamp(rawParams[i] ?? p.initial, p.min, p.max)) as unknown as ParamValues;
+    params = def.params.map((p, i) =>
+      clamp(rawParams[i] ?? p.initial, p.min, p.max),
+    ) as unknown as ParamValues;
   }
 
   let palette = base.palettes[material];
-  const rawColors = q.get("c")?.split("_").map((c) => `#${c.toLowerCase()}`);
+  const rawColors = q
+    .get("c")
+    ?.split("_")
+    .map((c) => `#${c.toLowerCase()}`);
   if (rawColors && rawColors.length === 4 && rawColors.every(isHex)) {
     palette = rawColors as unknown as Palette;
   }

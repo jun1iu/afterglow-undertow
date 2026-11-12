@@ -6,7 +6,15 @@ import { actions, useStudio } from "@/lib/store";
 import { IconButton } from "./IconButton";
 import { Slider } from "./Slider";
 
-function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
+function Section({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <section className="border-t border-paper/10 px-4 pt-3.5 pb-4 first:border-t-0">
       <header className="mb-3 flex h-6 items-center justify-between">
@@ -15,6 +23,18 @@ function Section({ title, action, children }: { title: string; action?: React.Re
       </header>
       {children}
     </section>
+  );
+}
+
+function SectionAction({ children, ...props }: React.ComponentProps<"button">) {
+  return (
+    <button
+      type="button"
+      className="-mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-2 text-xs text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper [&_svg]:size-3"
+      {...props}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -48,14 +68,10 @@ function PaletteEditor() {
     <Section
       title="Palette"
       action={
-        <button
-          type="button"
-          onClick={actions.shuffle}
-          className="-mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-2 text-xs text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper"
-        >
-          <Shuffle className="size-3" aria-hidden />
+        <SectionAction onClick={actions.shuffle}>
+          <Shuffle aria-hidden />
           Shuffle
-        </button>
+        </SectionAction>
       }
     >
       <div className="grid grid-cols-4 gap-1.5">
@@ -97,20 +113,34 @@ function Motion() {
     <Section
       title="Motion & finish"
       action={
-        <button
-          type="button"
-          onClick={actions.togglePaused}
-          aria-pressed={paused}
-          className="-mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-2 text-xs text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper"
-        >
-          {paused ? <Play className="size-3" aria-hidden /> : <Pause className="size-3" aria-hidden />}
+        <SectionAction onClick={actions.togglePaused} aria-pressed={paused}>
+          {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
           {paused ? "Play" : "Pause"}
-        </button>
+        </SectionAction>
       }
     >
       <div className="space-y-2.5">
-        <Slider label="Tempo" hint="Animation speed" value={tempo} min={0} max={3} step={0.05} initial={1} unit="×" onChange={actions.setTempo} />
-        <Slider label="Grain" hint="Film grain; also dithers away banding" value={grain} min={0} max={1} step={0.01} initial={0.25} onChange={actions.setGrain} />
+        <Slider
+          label="Tempo"
+          hint="Animation speed"
+          value={tempo}
+          min={0}
+          max={3}
+          step={0.05}
+          initial={1}
+          unit="×"
+          onChange={actions.setTempo}
+        />
+        <Slider
+          label="Grain"
+          hint="Film grain; also dithers away banding"
+          value={grain}
+          min={0}
+          max={1}
+          step={0.01}
+          initial={0.25}
+          onChange={actions.setGrain}
+        />
       </div>
     </Section>
   );
@@ -121,12 +151,18 @@ export function ControlPanel({ onClose }: { onClose: () => void }) {
   const def = MATERIALS[material];
 
   return (
-    <aside aria-label="Material controls" className="glass flex max-h-full w-full flex-col overflow-hidden rounded-2xl sm:w-[19rem]">
+    <aside
+      aria-label="Material controls"
+      className="flex max-h-full w-full flex-col overflow-hidden rounded-2xl glass sm:w-[19rem]"
+    >
       <header className="flex items-center justify-between py-2 pr-2 pl-4">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span aria-hidden className="size-1.5 shrink-0 animate-breathe rounded-full bg-accent shadow-[0_0_10px_var(--accent)]" />
+          <span
+            aria-hidden
+            className="size-1.5 shrink-0 animate-breathe rounded-full bg-accent shadow-[0_0_10px_var(--accent)]"
+          />
           <span className="truncate text-sm font-medium">{def.name}</span>
-          <span className="label-caps truncate text-paper/40">{def.technique}</span>
+          <span className="truncate label-caps text-paper/40">{def.technique}</span>
         </div>
         <div className="flex shrink-0">
           <IconButton label="Reset material" onClick={actions.resetMaterial}>

@@ -31,7 +31,7 @@ function useSignal<T>(signal: ReturnType<typeof createSignal<T>>): T {
   return useSyncExternalStore(signal.subscribe, signal.get, signal.get);
 }
 
-export type Support = "pending" | "ok" | "unsupported";
+type Support = "pending" | "ok" | "unsupported";
 
 const stats = createSignal<RenderStats | null>(null);
 const support = createSignal<Support>("pending");

@@ -15,7 +15,7 @@ interface SliderProps {
 }
 
 function format(value: number, step: number, unit?: string) {
-  const decimals = step >= 1 ? 0 : step >= 0.05 ? 2 : step >= 0.005 ? 2 : 3;
+  const decimals = step >= 1 ? 0 : step >= 0.005 ? 2 : 3;
   return `${value.toFixed(decimals)}${unit ?? ""}`;
 }
 
@@ -27,9 +27,15 @@ export function Slider({ label, hint, value, min, max, step, initial, unit, onCh
   const modified = Math.abs(value - initial) > step / 2;
 
   return (
-    <div className="group/slider" onDoubleClick={() => onChange(initial)} title={hint ? `${hint} · double-click to reset` : undefined}>
+    <div
+      className="group/slider"
+      onDoubleClick={() => onChange(initial)}
+      title={hint ? `${hint} · double-click to reset` : undefined}
+    >
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] text-paper/75 transition-colors group-hover/slider:text-paper">{label}</span>
+        <span className="text-[13px] text-paper/75 transition-colors group-hover/slider:text-paper">
+          {label}
+        </span>
         <span
           className={`font-mono text-[11px] tabular-nums transition-colors ${modified ? "text-paper" : "text-paper/45"}`}
         >

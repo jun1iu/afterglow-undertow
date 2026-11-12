@@ -41,9 +41,9 @@ export function ShaderCanvas() {
             background: `radial-gradient(120% 90% at 30% 20% in oklab, ${palette[2]}, ${palette[1]} 45%, ${palette[0]} 100%)`,
           }}
         >
-          <p className="glass max-w-sm rounded-2xl px-5 py-4 text-sm text-paper/80">
-            This browser doesn&rsquo;t expose WebGL2, so you&rsquo;re seeing a static gradient of the palette instead
-            of the live shader.
+          <p className="max-w-sm rounded-2xl px-5 py-4 text-sm text-paper/80 glass">
+            This browser doesn&rsquo;t expose WebGL2, so you&rsquo;re seeing a static gradient of the palette
+            instead of the live shader.
           </p>
         </div>
       )}

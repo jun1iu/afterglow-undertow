@@ -20,7 +20,10 @@ export function Dock() {
   };
 
   return (
-    <nav aria-label="Materials" className="glass scrollbar-none flex max-w-full gap-0.5 overflow-x-auto rounded-full p-1">
+    <nav
+      aria-label="Materials"
+      className="scrollbar-none flex max-w-full gap-0.5 overflow-x-auto rounded-full p-1 glass"
+    >
       {MATERIAL_LIST.map((material, i) => {
         const selected = material.id === active;
         return (
@@ -40,7 +43,9 @@ export function Dock() {
                 transition={{ type: "spring", stiffness: 420, damping: 36 }}
               />
             )}
-            <span className={`relative font-mono text-[10px] tabular-nums ${selected ? "text-ink/50" : "text-paper/35"}`}>
+            <span
+              className={`relative font-mono text-[10px] tabular-nums ${selected ? "text-ink/50" : "text-paper/35"}`}
+            >
               {String(i + 1).padStart(2, "0")}
             </span>
             <span className="relative font-medium">{material.name}</span>

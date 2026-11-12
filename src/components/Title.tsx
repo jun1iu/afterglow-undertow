@@ -15,9 +15,15 @@ export function Title() {
   return (
     <div className="[text-shadow:0_1px_24px_rgb(0_0_0/0.45)]">
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div key={id} initial="hidden" animate="shown" exit="gone" transition={{ staggerChildren: reduced ? 0 : 0.035 }}>
+        <motion.div
+          key={id}
+          initial="hidden"
+          animate="shown"
+          exit="gone"
+          transition={{ staggerChildren: reduced ? 0 : 0.035 }}
+        >
           <motion.p
-            className="label-caps flex items-center gap-3 text-paper/70"
+            className="flex items-center gap-3 label-caps text-paper/70"
             variants={{
               hidden: { opacity: 0, y: 8 },
               shown: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
@@ -32,7 +38,10 @@ export function Title() {
             {def.technique}
           </motion.p>
 
-          <h1 aria-label={def.name} className="mt-2 flex font-display text-[clamp(4.5rem,15vw,11.5rem)] leading-[0.86] tracking-[-0.02em] italic sm:mt-3">
+          <h1
+            aria-label={def.name}
+            className="mt-2 flex font-display text-[clamp(4.5rem,15vw,11.5rem)] leading-[0.86] tracking-[-0.02em] italic sm:mt-3"
+          >
             {Array.from(def.name).map((char, i) => (
               <motion.span
                 key={i}
@@ -43,7 +52,12 @@ export function Title() {
                   shown: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.8, ease: EASE } },
                   gone: reduced
                     ? { opacity: 0 }
-                    : { opacity: 0, y: "-0.12em", filter: "blur(10px)", transition: { duration: 0.2, ease: "easeIn" } },
+                    : {
+                        opacity: 0,
+                        y: "-0.12em",
+                        filter: "blur(10px)",
+                        transition: { duration: 0.2, ease: "easeIn" },
+                      },
                 }}
               >
                 {char}

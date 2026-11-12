@@ -33,7 +33,7 @@ export function IconButton({ label, shortcut, children, className = "", ...props
       <Tooltip.Portal>
         <Tooltip.Content
           sideOffset={8}
-          className="glass z-50 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-paper/90 data-[state=closed]:opacity-0"
+          className="z-50 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-paper/90 glass data-[state=closed]:opacity-0"
         >
           {label}
           {shortcut && <Kbd>{shortcut}</Kbd>}

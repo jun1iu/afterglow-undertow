@@ -9,17 +9,18 @@ npm install
 npm run dev        # http://localhost:3000
 npm run build      # production build
 npm run lint && npm run typecheck
+npm run format     # Prettier, with Tailwind class sorting
 ```
 
 ## The materials
 
-| # | Name | Technique |
-|---|---------|-----------|
-| 1 | Silk    | Three-level domain-warped fBm with a pleat-crest specular |
-| 2 | Mercury | Raymarched smooth-union metaballs with thin-film fresnel |
-| 3 | Offset  | Two halftone screens 30° apart, deliberately out of register |
-| 4 | Strata  | Terraced height field with derivative-antialiased isolines |
-| 5 | Tide    | Two layers of Worley cell borders with per-channel dispersion |
+| #   | Name    | Technique                                                     |
+| --- | ------- | ------------------------------------------------------------- |
+| 1   | Silk    | Three-level domain-warped fBm with a pleat-crest specular     |
+| 2   | Mercury | Raymarched smooth-union metaballs with thin-film fresnel      |
+| 3   | Offset  | Two halftone screens 30° apart, deliberately out of register  |
+| 4   | Strata  | Terraced height field with derivative-antialiased isolines    |
+| 5   | Tide    | Two layers of Worley cell borders with per-channel dispersion |
 
 Every material reacts to the pointer, and a click sends a pulse through it.
 

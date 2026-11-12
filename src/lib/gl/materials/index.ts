@@ -4,7 +4,7 @@ import { silk } from "./silk";
 import { strata } from "./strata";
 import { tide } from "./tide";
 
-export interface ParamDef {
+interface ParamDef {
   readonly label: string;
   readonly hint: string;
   readonly min: number;
@@ -17,7 +17,7 @@ export interface ParamDef {
 export type Palette = readonly [string, string, string, string];
 export type ParamValues = readonly [number, number, number, number];
 
-export interface MaterialDef {
+interface MaterialDef {
   readonly id: MaterialId;
   readonly name: string;
   readonly technique: string;
@@ -84,7 +84,15 @@ export const MATERIALS: Record<MaterialId, MaterialDef> = {
     params: [
       { label: "Scale", hint: "Map zoom", min: 0.6, max: 4, step: 0.01, initial: 1.6 },
       { label: "Levels", hint: "Number of contour bands", min: 4, max: 36, step: 1, initial: 14 },
-      { label: "Weight", hint: "Line thickness in pixels", min: 0.5, max: 3, step: 0.05, initial: 1.2, unit: "px" },
+      {
+        label: "Weight",
+        hint: "Line thickness in pixels",
+        min: 0.5,
+        max: 3,
+        step: 0.05,
+        initial: 1.2,
+        unit: "px",
+      },
       { label: "Relief", hint: "Shadow under each terrace", min: 0, max: 1, step: 0.01, initial: 0.6 },
     ],
   },

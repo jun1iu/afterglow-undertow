@@ -53,7 +53,10 @@ function useShortcuts() {
 
       // Leave keys alone while a control that uses them has focus.
       const target = event.target instanceof HTMLElement ? event.target : null;
-      if (target?.closest('input, textarea, select, [role="slider"], [role="dialog"], [contenteditable="true"]')) return;
+      if (
+        target?.closest('input, textarea, select, [role="slider"], [role="dialog"], [contenteditable="true"]')
+      )
+        return;
       const onButton = Boolean(target?.closest("button, a"));
 
       const digit = Number(event.key);
@@ -139,11 +142,16 @@ export function Studio() {
                     className="flex items-baseline gap-2.5 rounded-md [text-shadow:0_1px_16px_rgb(0_0_0/0.5)]"
                   >
                     <span className="font-display text-[26px] leading-none italic">Afterglow</span>
-                    <span className="label-caps hidden text-paper/55 sm:inline">WebGL material studio</span>
+                    <span className="hidden label-caps text-paper/55 sm:inline">WebGL material studio</span>
                   </a>
 
-                  <div className="glass flex items-center rounded-full p-0.5">
-                    <IconButton label="Controls" onClick={() => setSheet((open) => !open)} className="sm:hidden" aria-expanded={sheet}>
+                  <div className="flex items-center rounded-full p-0.5 glass">
+                    <IconButton
+                      label="Controls"
+                      onClick={() => setSheet((open) => !open)}
+                      className="sm:hidden"
+                      aria-expanded={sheet}
+                    >
                       <SlidersHorizontal />
                     </IconButton>
                     <IconButton label="Copy link" shortcut="C" onClick={() => void runtime.copyLink()}>
@@ -191,7 +199,7 @@ export function Studio() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
               >
-                <div className="glass rounded-full p-0.5 opacity-50 transition-opacity duration-300 focus-within:opacity-100 hover:opacity-100">
+                <div className="rounded-full p-0.5 opacity-50 glass transition-opacity duration-300 focus-within:opacity-100 hover:opacity-100">
                   <IconButton label="Show interface" shortcut="H" onClick={actions.toggleChrome}>
                     <Eye />
                   </IconButton>

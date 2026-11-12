@@ -26,7 +26,17 @@ interface Transition {
   start: number | null;
 }
 
-const UNIFORMS = ["u_res", "u_time", "u_pointer", "u_pulse", "u_seed", "u_grain", "u_pal", "u_p", "u_wipe"] as const;
+const UNIFORMS = [
+  "u_res",
+  "u_time",
+  "u_pointer",
+  "u_pulse",
+  "u_seed",
+  "u_grain",
+  "u_pal",
+  "u_p",
+  "u_wipe",
+] as const;
 type UniformName = (typeof UNIFORMS)[number];
 
 const MAX_DPR = 2;
