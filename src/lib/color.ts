@@ -3,7 +3,7 @@
  * touches is OKLab so gradients stay perceptually even (no muddy midpoints).
  */
 
-type Vec3 = readonly [number, number, number];
+export type Vec3 = readonly [number, number, number];
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
@@ -39,7 +39,7 @@ function linearRgbToOklab([r, g, b]: Vec3): Vec3 {
   ];
 }
 
-function oklabToLinearRgb([L, a, b]: Vec3): Vec3 {
+export function oklabToLinearRgb([L, a, b]: Vec3): Vec3 {
   const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
   const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
   const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
@@ -48,6 +48,11 @@ function oklabToLinearRgb([L, a, b]: Vec3): Vec3 {
     -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
     -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
   ];
+}
+
+export function hexToLinearRgb(hex: string): Vec3 {
+  const [r, g, b] = hexToRgb(hex);
+  return [srgbToLinear(r), srgbToLinear(g), srgbToLinear(b)];
 }
 
 export function hexToOklab(hex: string): Vec3 {

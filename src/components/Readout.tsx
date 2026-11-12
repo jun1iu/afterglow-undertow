@@ -1,12 +1,10 @@
 "use client";
 
 import { useStats } from "@/lib/runtime";
-import { useStudio } from "@/lib/store";
 
 /** Live renderer telemetry — frame rate, drawing-buffer size and the adaptive scale. */
-export function Readout() {
+export function Readout({ paused }: { paused: boolean }) {
   const stats = useStats();
-  const paused = useStudio((s) => s.paused);
   if (!stats) return null;
 
   return (

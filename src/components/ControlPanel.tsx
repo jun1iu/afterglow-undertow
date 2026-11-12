@@ -1,42 +1,12 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Shuffle, X } from "lucide-react";
+import { Pause, Play, RotateCcw } from "lucide-react";
 import { MATERIALS } from "@/lib/gl/materials";
 import { actions, useStudio } from "@/lib/store";
 import { IconButton } from "./IconButton";
+import { PaletteEditor } from "./PaletteEditor";
+import { Panel, Section, SectionAction } from "./Panel";
 import { Slider } from "./Slider";
-
-function Section({
-  title,
-  action,
-  children,
-}: {
-  title: string;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="border-t border-paper/10 px-4 pt-3.5 pb-4 first:border-t-0">
-      <header className="mb-3 flex h-6 items-center justify-between">
-        <h2 className="label-caps text-paper/45">{title}</h2>
-        {action}
-      </header>
-      {children}
-    </section>
-  );
-}
-
-function SectionAction({ children, ...props }: React.ComponentProps<"button">) {
-  return (
-    <button
-      type="button"
-      className="-mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-2 text-xs text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper [&_svg]:size-3"
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
 
 function Parameters() {
   const material = useStudio((s) => s.material);
@@ -55,51 +25,6 @@ function Parameters() {
           />
         ))}
       </div>
-    </Section>
-  );
-}
-
-const STOP_NAMES = ["Shadow", "Body", "Light", "Highlight"] as const;
-
-function PaletteEditor() {
-  const palette = useStudio((s) => s.palettes[s.material]);
-
-  return (
-    <Section
-      title="Palette"
-      action={
-        <SectionAction onClick={actions.shuffle}>
-          <Shuffle aria-hidden />
-          Shuffle
-        </SectionAction>
-      }
-    >
-      <div className="grid grid-cols-4 gap-1.5">
-        {palette.map((hex, i) => (
-          <label key={i} className="group/swatch relative block cursor-pointer">
-            <span className="sr-only">{STOP_NAMES[i]} colour</span>
-            <span
-              className="block h-11 rounded-lg ring-1 ring-paper/15 transition-transform duration-200 ease-out-expo ring-inset group-focus-within/swatch:outline-[1.5px] group-focus-within/swatch:outline-offset-2 group-focus-within/swatch:outline-paper group-hover/swatch:-translate-y-0.5"
-              style={{ backgroundColor: hex }}
-            />
-            <input
-              type="color"
-              value={hex}
-              onChange={(event) => actions.setColor(i, event.target.value)}
-              className="absolute inset-0 size-full cursor-pointer opacity-0"
-            />
-            <span className="mt-1.5 block text-center font-mono text-[10px] text-paper/45 uppercase transition-colors group-hover/swatch:text-paper/80">
-              {hex.slice(1)}
-            </span>
-          </label>
-        ))}
-      </div>
-      {/* The same OKLab interpolation the shader uses, so this strip is a true preview. */}
-      <div
-        aria-hidden
-        className="mt-3 h-1.5 rounded-full"
-        style={{ background: `linear-gradient(to right in oklab, ${palette.join(", ")})` }}
-      />
     </Section>
   );
 }
@@ -148,36 +73,24 @@ function Motion() {
 
 export function ControlPanel({ onClose }: { onClose: () => void }) {
   const material = useStudio((s) => s.material);
+  const palette = useStudio((s) => s.palettes[s.material]);
   const def = MATERIALS[material];
 
   return (
-    <aside
-      aria-label="Material controls"
-      className="flex max-h-full w-full flex-col overflow-hidden rounded-2xl glass sm:w-[19rem]"
+    <Panel
+      label="Material controls"
+      title={def.name}
+      caption={def.technique}
+      onClose={onClose}
+      actions={
+        <IconButton label="Reset material" onClick={actions.resetMaterial}>
+          <RotateCcw />
+        </IconButton>
+      }
     >
-      <header className="flex items-center justify-between py-2 pr-2 pl-4">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span
-            aria-hidden
-            className="size-1.5 shrink-0 animate-breathe rounded-full bg-accent shadow-[0_0_10px_var(--accent)]"
-          />
-          <span className="truncate text-sm font-medium">{def.name}</span>
-          <span className="truncate label-caps text-paper/40">{def.technique}</span>
-        </div>
-        <div className="flex shrink-0">
-          <IconButton label="Reset material" onClick={actions.resetMaterial}>
-            <RotateCcw />
-          </IconButton>
-          <IconButton label="Close controls" onClick={onClose} className="sm:hidden">
-            <X />
-          </IconButton>
-        </div>
-      </header>
-      <div className="scrollbar-none overflow-y-auto border-t border-paper/10">
-        <Parameters />
-        <PaletteEditor />
-        <Motion />
-      </div>
-    </aside>
+      <Parameters />
+      <PaletteEditor palette={palette} onColorChange={actions.setColor} onShuffle={actions.shuffle} />
+      <Motion />
+    </Panel>
   );
 }

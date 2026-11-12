@@ -1,6 +1,9 @@
-# Afterglow
+# Afterglow & Undertow
 
-A WebGL material studio: five hand-written GLSL materials you can tune, recolour, export and share by URL.
+Two WebGL studios in one Next.js app:
+
+- **Afterglow** (`/`) — five hand-written GLSL materials you can tune, recolour, export and share by URL.
+- **Undertow** (`/fluid`) — a real-time fluid simulation solved on the GPU, where a word you type is a solid obstacle the fluid flows around.
 
 Built with **Next.js 16** (App Router), **React 19**, **TypeScript** (strict), **Tailwind CSS v4**, **Radix UI**, **Motion**, **cmdk** and **raw WebGL2** — no 3D library.
 
@@ -12,7 +15,7 @@ npm run lint && npm run typecheck
 npm run format     # Prettier, with Tailwind class sorting
 ```
 
-## The materials
+## Afterglow: the materials
 
 | #   | Name    | Technique                                                     |
 | --- | ------- | ------------------------------------------------------------- |
@@ -34,6 +37,27 @@ Every material reacts to the pointer, and a click sends a pulse through it.
 - **Keyboard first.** `1`–`5` materials · `←` `→` cycle · `Space` pause · `R` shuffle · `E` export PNG · `C` copy link · `H` hide interface · `⌘K` command menu.
 - **Accessible.** Radix sliders, labelled controls, visible focus, `prefers-reduced-motion` (starts paused, instant transitions), and a CSS-gradient fallback when WebGL2 is unavailable.
 
+## Undertow: the fluid solver
+
+A 2D incompressible Navier–Stokes solver ("stable fluids") running entirely in fragment shaders on half-float textures. Each frame runs, in order:
+
+| Pass | What it does |
+|------|--------------|
+| Splat | Adds force and dye from the pointer and from two built-in jets |
+| Curl → vorticity | Vorticity confinement, restoring swirl lost to numerical diffusion |
+| Divergence | Measures how much the field compresses, with no-slip walls |
+| Pressure | Jacobi iterations of the Poisson equation, warm-started from the last frame |
+| Gradient subtract | Projects velocity onto its divergence-free part |
+| Advect | Semi-Lagrangian transport of velocity, then dye |
+| Bloom → display | Threshold, blur chain, relief lighting, tone curve, grain |
+
+- **Typography as a boundary condition.** The obstacle word is rasterised with Canvas 2D into a mask texture. The divergence, pressure and gradient passes treat masked cells as solid walls, so the flow routes around each letter.
+- **Three views of the same field.** Dye, velocity and pressure (`V` cycles them).
+- **Resilient.** Fields are resampled, not wiped, on resize; dye and display resolution adapt to frame rate while the solver grid stays fixed; there is a fallback when float render targets are unavailable.
+- **Shortcuts.** `1`–`4` presets · `V` field · `X` clear · `R` shuffle · `Space` pause · `E` export · `C` copy link · `H` hide interface.
+
+The solver lives in `src/lib/fluid/` (`shaders.ts`, `sim.ts`, `store.ts`); its UI is in `src/components/fluid/`.
+
 ## Design file
 
 The UI is mirrored in Figma: [Afterglow — WebGL material studio](https://www.figma.com/design/vdRPIQwuptIbVveMQIrjzn).
@@ -48,11 +72,15 @@ The UI is mirrored in Figma: [Afterglow — WebGL material studio](https://www.f
 ```
 src/
   app/                 layout, page, global CSS (Tailwind theme tokens)
+  app/fluid/           the Undertow route
   components/          Studio shell, control panel, dock, command menu, …
+  components/fluid/    Undertow shell, panel and preset dock
   lib/
     color.ts           sRGB ↔ OKLab/OKLCH, palette generation
     store.ts           state, actions, URL encode/decode
     runtime.ts         renderer handle, stats, toasts, export/share
+    create-store.ts    the tiny external store both studios use
+    fluid/             fluid solver: shaders, simulation loop, state
     gl/
       prelude.ts       shared GLSL: noise, palette ramp, output stage
       renderer.ts      WebGL2 context, frame loop, transitions, capture
