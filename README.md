@@ -33,6 +33,15 @@ Every material reacts to the pointer, and a click sends a pulse through it.
 - **Keyboard first.** `1`–`5` materials · `←` `→` cycle · `Space` pause · `R` shuffle · `E` export PNG · `C` copy link · `H` hide interface · `⌘K` command menu.
 - **Accessible.** Radix sliders, labelled controls, visible focus, `prefers-reduced-motion` (starts paused, instant transitions), and a CSS-gradient fallback when WebGL2 is unavailable.
 
+## Design file
+
+The UI is mirrored in Figma: [Afterglow — WebGL material studio](https://www.figma.com/design/vdRPIQwuptIbVveMQIrjzn).
+
+- **Variables**: `color/*`, a `palette/<material>/<stop>` set for all five materials, radii and spacing — the same values as `src/app/globals.css` and `src/lib/gl/materials/index.ts`.
+- **Text styles**: Instrument Serif (display), Geist (UI) and Geist Mono (labels and readouts).
+- **Components**: Slider, Swatch, Dock Item (selected / default), Icon Button and the icon set, each named after its React counterpart.
+- **Screen**: the 1440 desktop studio, built from instances with editable layers. The shader backdrop is a stand-in made of blurred shapes; the real thing only exists at runtime.
+
 ## Layout
 
 ```
