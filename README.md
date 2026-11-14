@@ -1,82 +1,99 @@
 # Afterglow & Undertow
 
-Two WebGL studios in one Next.js app:
+Two interactive art pieces that run in your web browser. Nothing is a video or a picture: everything you see is drawn live by your computer's graphics chip, and it responds to you as you move, click and type.
 
-- **Afterglow** (`/`) — five hand-written GLSL materials you can tune, recolour, export and share by URL.
-- **Undertow** (`/fluid`) — a real-time fluid simulation solved on the GPU, where a word you type is a solid obstacle the fluid flows around.
+- **Afterglow** is a set of five moving, colourful surfaces you can restyle and save.
+- **Undertow** is a pool of digital ink that swirls like real liquid and flows around a word you type.
 
-Built with **Next.js 16** (App Router), **React 19**, **TypeScript** (strict), **Tailwind CSS v4**, **Radix UI**, **Motion**, **cmdk** and **raw WebGL2** — no 3D library.
+## Afterglow
+
+Afterglow shows one animated surface at a time, filling the whole screen. There are five to choose from:
+
+| #   | Name    | What it looks like                                          |
+| --- | ------- | ----------------------------------------------------------- |
+| 1   | Silk    | Soft folds of fabric slowly shifting, with light on the creases |
+| 2   | Mercury | Blobs of liquid metal that merge and split, with an oily sheen  |
+| 3   | Offset  | Printed dots, like a newspaper photo that is slightly misprinted |
+| 4   | Strata  | Stacked layers with contour lines, like a map of hills      |
+| 5   | Tide    | A shimmering net of light, like sun on the floor of a pool  |
+
+What you can do:
+
+- **Move your mouse** and the surface reacts. **Click** and a ripple travels through it.
+- **Adjust it** with sliders: each surface has four settings that change how it moves and looks.
+- **Change the colours** by picking a palette, or shuffle for a random one.
+- **Save a picture** of what is on screen.
+- **Share it.** Copy a link, and whoever opens it sees exactly the look you made.
+
+When you switch from one surface to another, the new one spreads out from the spot where you clicked.
+
+## Undertow
+
+Undertow is a simulation of liquid. Coloured ink is pushed around the screen, and it curls, mixes and fades the way smoke or dye in water would.
+
+- **Drag your mouse** to stir the ink.
+- **Type a word** and it becomes a solid object in the pool. The ink cannot pass through the letters, so it streams around them.
+- **Switch views** to see the ink itself, how fast the liquid is moving, or where it is being squeezed.
+- **Pick a preset** for a different starting style, and save or share the result just like in Afterglow.
+
+## Keyboard shortcuts
+
+You can do everything with the mouse, but the keyboard is faster.
+
+| Key            | Afterglow                 | Undertow              |
+| -------------- | ------------------------- | --------------------- |
+| `1`–`5`        | Choose a surface          | Choose a preset (`1`–`4`) |
+| `←` `→`        | Previous / next surface   | —                     |
+| `Space`        | Pause or resume           | Pause or resume       |
+| `R`            | Shuffle colours           | Shuffle colours       |
+| `E`            | Save a picture            | Save a picture        |
+| `C`            | Copy a link to share      | Copy a link to share  |
+| `H`            | Hide or show the controls | Hide or show the controls |
+| `V`            | —                         | Switch view           |
+| `X`            | —                         | Clear the ink         |
+| `⌘K` / `Ctrl K` | Open a searchable menu    | —                     |
+
+## Built with care
+
+- **Colours stay clean.** Blends between colours are worked out the way the human eye sees them, so they never turn grey or muddy in the middle.
+- **It adapts to your device.** If your computer is struggling, the picture quietly becomes a little less sharp to keep the motion smooth, then sharpens again when it can.
+- **It does not waste battery.** When paused and untouched, it stops drawing.
+- **It works for more people.** Everything can be reached by keyboard and is labelled for screen readers. If you have asked your device to reduce motion, it starts paused. On older devices that cannot run it, you still get a still, coloured background.
+- **It works on phones** as well as desktops.
+
+## The design
+
+The design is written up as a case study in Figma: [Afterglow & Undertow](https://www.figma.com/design/vdRPIQwuptIbVveMQIrjzn). It covers the idea behind the project, the colours, lettering and buttons, every screen on desktop and phone, and notes on how it moves and behaves.
+
+## Running it yourself
+
+This part needs a little technical setup. You need [Node.js](https://nodejs.org) installed. Then, in a terminal opened in this folder:
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+```
+
+```bash
+npm run dev
+```
+
+Open <http://localhost:3000> in your browser. Afterglow is the home page, and Undertow is at <http://localhost:3000/fluid>.
+
+## For developers
+
+Next.js 16 (App Router), React 19, strict TypeScript, Tailwind CSS v4, Radix UI, Motion, cmdk and raw WebGL2, with no 3D library.
+
+```bash
 npm run build      # production build
 npm run lint && npm run typecheck
 npm run format     # Prettier, with Tailwind class sorting
 ```
 
-## Afterglow: the materials
-
-| #   | Name    | Technique                                                     |
-| --- | ------- | ------------------------------------------------------------- |
-| 1   | Silk    | Three-level domain-warped fBm with a pleat-crest specular     |
-| 2   | Mercury | Raymarched smooth-union metaballs with thin-film fresnel      |
-| 3   | Offset  | Two halftone screens 30° apart, deliberately out of register  |
-| 4   | Strata  | Terraced height field with derivative-antialiased isolines    |
-| 5   | Tide    | Two layers of Worley cell borders with per-channel dispersion |
-
-Every material reacts to the pointer, and a click sends a pulse through it.
-
-## Things worth looking at
-
-- **Perceptual colour, end to end.** Palettes are converted to OKLab on the CPU and interpolated in OKLab on the GPU, so ramps never go muddy. The panel's preview strip uses `linear-gradient(in oklab, …)`, so it matches the shader. Shuffle generates palettes in OKLCH with gamut mapping.
-- **A reveal that starts where you click.** Switching material draws the old shader, then alpha-blends the new one through an expanding, noise-edged mask centred on the click (`src/lib/gl/prelude.ts`).
-- **React stays out of the frame loop.** State lives in a small external store (`src/lib/store.ts`). Components read it through `useSyncExternalStore`; the renderer subscribes directly, so dragging a slider repaints the canvas without re-rendering the tree.
-- **Draw on demand, adaptive resolution.** A paused, untouched canvas draws nothing. While animating, the renderer lowers internal resolution when frames run long and recovers after a cool-down; the readout shows the current scale.
-- **Shareable state.** The current look is serialised into the URL fragment and validated on the way back in.
-- **Keyboard first.** `1`–`5` materials · `←` `→` cycle · `Space` pause · `R` shuffle · `E` export PNG · `C` copy link · `H` hide interface · `⌘K` command menu.
-- **Accessible.** Radix sliders, labelled controls, visible focus, `prefers-reduced-motion` (starts paused, instant transitions), and a CSS-gradient fallback when WebGL2 is unavailable.
-
-## Undertow: the fluid solver
-
-A 2D incompressible Navier–Stokes solver ("stable fluids") running entirely in fragment shaders on half-float textures. Each frame runs, in order:
-
-| Pass              | What it does                                                                |
-| ----------------- | --------------------------------------------------------------------------- |
-| Splat             | Adds force and dye from the pointer and from two built-in jets              |
-| Curl → vorticity  | Vorticity confinement, restoring swirl lost to numerical diffusion          |
-| Divergence        | Measures how much the field compresses, with no-slip walls                  |
-| Pressure          | Jacobi iterations of the Poisson equation, warm-started from the last frame |
-| Gradient subtract | Projects velocity onto its divergence-free part                             |
-| Advect            | Semi-Lagrangian transport of velocity, then dye                             |
-| Bloom → display   | Threshold, blur chain, relief lighting, tone curve, grain                   |
-
-- **Typography as a boundary condition.** The obstacle word is rasterised with Canvas 2D into a mask texture. The divergence, pressure and gradient passes treat masked cells as solid walls, so the flow routes around each letter.
-- **Three views of the same field.** Dye, velocity and pressure (`V` cycles them).
-- **Resilient.** Fields are resampled, not wiped, on resize; dye and display resolution adapt to frame rate while the solver grid stays fixed; there is a fallback when float render targets are unavailable.
-- **Shortcuts.** `1`–`4` presets · `V` field · `X` clear · `R` shuffle · `Space` pause · `E` export · `C` copy link · `H` hide interface.
-
-The solver lives in `src/lib/fluid/` (`shaders.ts`, `sim.ts`, `store.ts`); its UI is in `src/components/fluid/`.
-
-## Design file
-
-The project is documented as a case study in Figma: [Afterglow & Undertow](https://www.figma.com/design/vdRPIQwuptIbVveMQIrjzn).
-
-1. **Cover and overview** — the problem, constraints, key decisions and outcome.
-2. **Foundations and components** — colour (nine four-stop palettes), type, radius and the glass surface; nine components and nine icons, each captioned with the source file it maps to.
-3. **Afterglow** — a 1440 desktop screen for each of the five materials.
-4. **Undertow and mobile** — the fluid studio on desktop, plus 390 mobile layouts including the control sheet.
-5. **Interaction and handoff** — motion values, responsive rules, keyboard map, accessibility notes and a design-to-code table.
-
-Screens are built from component instances bound to variables. Their canvases hold frames captured from the running app, since the shaders only exist at runtime.
-
-## Layout
-
 ```
 src/
   app/                 layout, page, global CSS (Tailwind theme tokens)
   app/fluid/           the Undertow route
-  components/          Studio shell, control panel, dock, command menu, …
+  components/          Studio shell, control panel, dock, command menu
   components/fluid/    Undertow shell, panel and preset dock
   lib/
     color.ts           sRGB ↔ OKLab/OKLCH, palette generation
@@ -90,4 +107,6 @@ src/
       materials/       one fragment shader per material + registry
 ```
 
-To add a material, write a `vec3 scene(vec2 uv, vec2 p)` function, then register it with four parameters and a palette in `materials/index.ts`. The UI, URL state and command menu pick it up from the registry.
+- **Afterglow** materials are hand-written GLSL fragment shaders. To add one, write a `vec3 scene(vec2 uv, vec2 p)` function and register it with four parameters and a palette in `materials/index.ts`; the UI, URL state and command menu pick it up from the registry.
+- **Undertow** is a 2D "stable fluids" Navier–Stokes solver in fragment shaders on half-float textures: splat, vorticity confinement, divergence, Jacobi pressure, gradient subtract, semi-Lagrangian advection, then bloom and display. The typed word is rasterised to a mask texture and treated as solid walls.
+- State lives in an external store read through `useSyncExternalStore`; the renderer subscribes directly, so React stays out of the frame loop.
